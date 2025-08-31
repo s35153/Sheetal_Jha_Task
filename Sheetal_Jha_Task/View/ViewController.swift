@@ -10,6 +10,12 @@ import UIKit
 class ViewController: UIViewController {
     
     // MARK: - UI Components
+    private lazy var portfolioSummaryView: PortfolioSummaryView = {
+        let view = PortfolioSummaryView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -26,6 +32,9 @@ class ViewController: UIViewController {
         indicator.hidesWhenStopped = true
         return indicator
     }()
+    
+    // MARK: - Data
+    private var portfolioSummary: PortfolioSummary?
     
     // MARK: - ViewModel
     private let viewModel: HoldingsViewModelProtocol
@@ -65,12 +74,18 @@ class ViewController: UIViewController {
     }
     
     private func setupTableView() {
+        view.addSubview(portfolioSummaryView)
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
         
         NSLayoutConstraint.activate([
+            // Portfolio Summary View
+            portfolioSummaryView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            portfolioSummaryView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            portfolioSummaryView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
             // Table View
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.topAnchor.constraint(equalTo: portfolioSummaryView.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -91,6 +106,7 @@ class ViewController: UIViewController {
         if let holdingsViewModel = viewModel as? HoldingsViewModel {
             holdingsViewModel.onDataLoaded = { [weak self] in
                 self?.activityIndicator.stopAnimating()
+                self?.updatePortfolioSummary()
                 self?.tableView.reloadData()
             }
             
@@ -101,6 +117,27 @@ class ViewController: UIViewController {
         }
         
         viewModel.loadHoldings()
+    }
+    
+    private func updatePortfolioSummary() {
+        // Create holdings array from viewModel
+        var holdings: [Holding] = []
+        for i in 0..<viewModel.numberOfHoldings {
+            holdings.append(viewModel.holding(at: i))
+        }
+        
+        // Create portfolio summary
+        portfolioSummary = PortfolioSummary(holdings: holdings)
+        
+        // Configure the summary view
+        if let summary = portfolioSummary {
+            portfolioSummaryView.configure(with: summary) { [weak self] in
+                // Handle expand/collapse animation
+                UIView.animate(withDuration: 0.3) {
+                    self?.view.layoutIfNeeded()
+                }
+            }
+        }
     }
     
     private func showError(_ error: Error) {
