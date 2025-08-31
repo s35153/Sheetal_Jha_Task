@@ -16,7 +16,8 @@ class DIContainer {
     
     // MARK: - Services
     private lazy var networkService: NetworkServiceProtocol = NetworkService()
-    private lazy var holdingsService: HoldingsServiceProtocol = HoldingsService(networkService: networkService)
+    private lazy var cacheService: CacheServiceProtocol = CacheService()
+    private lazy var holdingsService: HoldingsServiceProtocol = HoldingsService(networkService: networkService, cacheService: cacheService)
     
     // MARK: - Factory Methods
     func makeHoldingsViewModel() -> HoldingsViewModelProtocol {
