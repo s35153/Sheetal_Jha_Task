@@ -20,6 +20,13 @@ class ViewController: UIViewController {
         return tableView
     }()
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    
     // MARK: - ViewModel
     private let viewModel: HoldingsViewModelProtocol
     
@@ -59,13 +66,18 @@ class ViewController: UIViewController {
     
     private func setupTableView() {
         view.addSubview(tableView)
+        view.addSubview(activityIndicator)
         
         NSLayoutConstraint.activate([
             // Table View
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            // Activity Indicator
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
         
         // Register custom cell
@@ -73,8 +85,28 @@ class ViewController: UIViewController {
     }
     
     private func loadData() {
+        activityIndicator.startAnimating()
+        
+        // Set up callbacks
+        if let holdingsViewModel = viewModel as? HoldingsViewModel {
+            holdingsViewModel.onDataLoaded = { [weak self] in
+                self?.activityIndicator.stopAnimating()
+                self?.tableView.reloadData()
+            }
+            
+            holdingsViewModel.onError = { [weak self] error in
+                self?.activityIndicator.stopAnimating()
+                self?.showError(error)
+            }
+        }
+        
         viewModel.loadHoldings()
-        tableView.reloadData()
+    }
+    
+    private func showError(_ error: Error) {
+        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 

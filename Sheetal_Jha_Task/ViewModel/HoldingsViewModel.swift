@@ -2,7 +2,7 @@
 //  HoldingsViewModel.swift
 //  Sheetal_Jha_Task
 //
-//  Created by Sheetal Jha on 29/08/25.
+//  Created by Sheetal Jha on 31/08/25.
 //
 
 import Foundation
@@ -12,6 +12,10 @@ class HoldingsViewModel: HoldingsViewModelProtocol {
     // MARK: - Properties
     private var holdings: [Holding] = []
     private let holdingsService: HoldingsServiceProtocol
+    
+    // MARK: - Callbacks
+    var onDataLoaded: (() -> Void)?
+    var onError: ((Error) -> Void)?
     
     // MARK: - Initialization
     init(holdingsService: HoldingsServiceProtocol) {
@@ -28,6 +32,16 @@ class HoldingsViewModel: HoldingsViewModelProtocol {
     }
     
     func loadHoldings() {
-        holdings = holdingsService.fetchHoldings()
+        holdingsService.fetchHoldings { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let holdings):
+                    self?.holdings = holdings
+                    self?.onDataLoaded?()
+                case .failure(let error):
+                    self?.onError?(error)
+                }
+            }
+        }
     }
 }
