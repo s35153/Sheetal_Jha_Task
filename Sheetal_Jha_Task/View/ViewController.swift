@@ -21,7 +21,17 @@ class ViewController: UIViewController {
     }()
     
     // MARK: - ViewModel
-    private let viewModel = HoldingsViewModel()
+    private let viewModel: HoldingsViewModelProtocol
+    
+    // MARK: - Initialization
+    init(viewModel: HoldingsViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:)")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
