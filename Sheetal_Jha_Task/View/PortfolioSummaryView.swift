@@ -203,7 +203,7 @@ class PortfolioSummaryView: UIView {
     private func toggleExpansion() {
         isExpanded.toggle()
         
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0) {
+        UIView.animate(withDuration: 0.3) {
             // Rotate arrow
             let rotation = self.isExpanded ? CGAffineTransform(rotationAngle: .pi) : .identity
             self.arrowImageView.transform = rotation
