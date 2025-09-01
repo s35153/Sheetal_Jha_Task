@@ -30,7 +30,7 @@ The app calculates everything according to the standard formulas:
 
 ## How it's built
 
-The app follows MVVM (Model-View-ViewModel) architecture with dependency injection
+The app follows MVVM (Model-View-ViewModel) architecture with SOLID Principle
 
 **The Structure:**
 - **Views** handle the UI (table views, custom cells, portfolio summary)
@@ -47,13 +47,26 @@ The app follows MVVM (Model-View-ViewModel) architecture with dependency injecti
 ## Project Structure
 
 ```
-├── Model/                    # Data structures and calculations
-├── View/                     # UI components and view controllers  
-├── ViewModel/                # Business logic layer
-├── Services/                 # Network and data services
-├── Protocols/                # Interface contracts
-├── DI/                       # Dependency injection setup
-└── Tests/                    # Unit tests for all components
+├── Model/
+│   ├── APIResponseModels.swift      # Codable API response models
+│   ├── Holding.swift                # Core Holding model (Codable)
+│   ├── Holding+Calculations.swift   # Holding calculation extensions
+│   ├── PortfolioSummary.swift       # Portfolio summary model
+│   └── PortfolioSummary+Calculations.swift # Portfolio calculation extensions
+├── View/                            # UI components and view controllers  
+├── ViewModel/                       # Business logic layer
+├── Services/
+│   ├── NetworkService.swift         # API communication implementation
+│   ├── CacheService.swift          # Local data persistence implementation
+│   ├── HoldingsService.swift       # Holdings data orchestration
+│   └── NetworkError.swift          # Network error definitions
+├── Protocols/
+│   ├── NetworkServiceProtocol.swift # Network service contract
+│   ├── CacheServiceProtocol.swift  # Cache service contract
+│   ├── HoldingsServiceProtocol.swift # Holdings service contract
+│   └── HoldingsViewModelProtocol.swift # ViewModel contract
+├── DI/                              # Dependency injection setup
+└── Tests/                           # Unit tests for all components
 ```
 
 ## Testing

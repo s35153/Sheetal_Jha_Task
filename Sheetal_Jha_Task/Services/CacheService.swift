@@ -7,14 +7,7 @@
 
 import Foundation
 
-// MARK: - Cache Service Protocol
-protocol CacheServiceProtocol {
-    func saveHoldings(_ holdings: [Holding])
-    func loadCachedHoldings() -> [Holding]?
-    func hasCachedData() -> Bool
-}
 
-// MARK: - Cache Service Implementation
 class CacheService: CacheServiceProtocol {
     
     private let userDefaults = UserDefaults.standard

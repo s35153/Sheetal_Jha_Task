@@ -6,21 +6,6 @@
 //
 
 import Foundation
-
-// MARK: - Network Service Protocol
-protocol NetworkServiceProtocol {
-    func fetchHoldings(completion: @escaping (Result<[Holding], Error>) -> Void)
-}
-
-// MARK: - Network Error
-enum NetworkError: Error {
-    case invalidURL
-    case noData
-    case decodingError
-    case networkError(Error)
-}
-
-// MARK: - Network Service Implementation
 class NetworkService: NetworkServiceProtocol {
     
     private let baseURL = "https://35dee773a9ec441e9f38d5fc249406ce.api.mockbin.io/"
